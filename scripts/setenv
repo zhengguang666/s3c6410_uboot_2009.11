@@ -1,0 +1,5 @@
+#!/bin/sh
+export PATH=$PATH:/usr/local/arm/4.3.2/bin
+export SRC_UBOOT=${PWD}/../u-boot-2009.11
+export BUILD_DIR=${PWD}/../../build
+
