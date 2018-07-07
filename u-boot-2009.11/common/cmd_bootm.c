@@ -72,7 +72,7 @@ extern void bz_internal_error(int);
 static int image_info (unsigned long addr);
 #endif
 
-#if defined(CONFIG_CMD_IMLS)
+#if defined(CONFIG_CMD_IMLS) && !defined(CONFIG_SYS_NO_FLASH)
 #include <flash.h>
 extern flash_info_t flash_info[]; /* info for FLASH chips */
 static int do_imls (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
@@ -1131,7 +1131,7 @@ U_BOOT_CMD(
 /*******************************************************************/
 /* imls - list all images found in flash */
 /*******************************************************************/
-#if defined(CONFIG_CMD_IMLS)
+#if defined(CONFIG_CMD_IMLS) && !defined(CONFIG_SYS_NO_FLASH)
 int do_imls (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	flash_info_t *info;

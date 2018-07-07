@@ -67,11 +67,6 @@ int board_init(void)
 
 	cs8900_pre_init();
 
-	/* NOR-flash in SROM0 */
-
-	/* Enable WAIT */
-	SROM_BW_REG |= 4 | 8 | 1;
-
 	gd->bd->bi_arch_number = MACH_TYPE;
 	gd->bd->bi_boot_params = PHYS_SDRAM_1 + 0x100;
 
@@ -91,7 +86,7 @@ int dram_init(void)
 #ifdef CONFIG_DISPLAY_BOARDINFO
 int checkboard(void)
 {
-	printf("Board:   SMDK6400\n");
+	printf("Board:   MY6410\n");
 	return 0;
 }
 #endif
@@ -108,6 +103,7 @@ ulong virt_to_phy_smdk6400(ulong addr)
 }
 #endif
 
+#ifndef CONFIG_SYS_NO_FLASH
 ulong board_flash_get_legacy (ulong base, int banknum, flash_info_t *info)
 {
 	if (banknum == 0) {	/* non-CFI boot flash */
@@ -118,6 +114,7 @@ ulong board_flash_get_legacy (ulong base, int banknum, flash_info_t *info)
 	} else
 		return 0;
 }
+#endif
 
 #ifdef CONFIG_CMD_NET
 int board_eth_init(bd_t *bis)

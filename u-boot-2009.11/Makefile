@@ -3047,8 +3047,8 @@ smdk2400_config	:	unconfig
 smdk2410_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm920t smdk2410 samsung s3c24x0
 
-My6410_config : 	unconfig
-	@$(MKCONFIG) $(@:_config=) arm arm1176 My6410 samsung s3c64xx
+My6410_config	:	unconfig
+	@$(MKCONFIG) $(@:_config=) arm arm1176 My6410 samsung s3c64xx 
 
 SX1_stdout_serial_config \
 SX1_config:		unconfig

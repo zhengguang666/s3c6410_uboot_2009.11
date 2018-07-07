@@ -24,7 +24,16 @@
  */
 
 #include <config.h>
+
+#if defined(CONFIG_S3C6400)
 #include <s3c6400.h>
+
+#elif defined(CONFIG_S3C6410)
+#include <s3c6410.h>
+
+#else
+#error "Only 6400 and 6410 Soc are supported."
+#endif
 
 	.globl mem_ctrl_asm_init
 mem_ctrl_asm_init:

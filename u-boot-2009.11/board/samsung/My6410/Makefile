@@ -28,7 +28,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(BOARD).a
 
-COBJS-y	:= My6410.o
+COBJS-y	:= My6410.o nand_cp.o movi.o
 SOBJS	:= lowlevel_init.o
 
 SRCS    := $(SOBJS:.o=.S) $(COBJS-y:.o=.c)

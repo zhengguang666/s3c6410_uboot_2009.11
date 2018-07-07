@@ -44,12 +44,14 @@ COBJS-y	+= cache-cp15.o
 endif
 COBJS-y	+= interrupts.o
 COBJS-y	+= reset.o
+DEBUG-$(CONFIG_ASM_DEBUG) += debug.o
 
 SRCS	:= $(GLSOBJS:.o=.S) $(GLCOBJS:.o=.c) \
-	   $(SOBJS-y:.o=.S) $(COBJS-y:.o=.c)
+	   $(SOBJS-y:.o=.S) $(COBJS-y:.o=.c) $(DEBUG-y:.o=.S)
 OBJS	:= $(addprefix $(obj),$(SOBJS-y) $(COBJS-y))
 LGOBJS	:= $(addprefix $(obj),$(GLSOBJS)) \
 	   $(addprefix $(obj),$(GLCOBJS))
+DEBUG	:= $(addprefix $(obj),$(DEBUG-y))
 
 # Always build libarm.a
 TARGETS	:= $(LIB)
@@ -64,7 +66,7 @@ ifneq (,$(findstring -mabi=aapcs-linux,$(PLATFORM_CPPFLAGS)))
 TARGETS	+= $(obj)eabi_compat.o
 endif
 
-all:	$(TARGETS)
+all:	$(TARGETS) $(DEBUG)
 
 $(LIB):	$(obj).depend $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)

@@ -8,7 +8,7 @@
  * (C) Copyright 2008
  * Guennadi Liakhovetki, DENX Software Engineering, <lg@denx.de>
  *
- * Configuation settings for the SAMSUNG SMDK6400(mDirac-III) board.
+ * Configuation settings for the SAMSUNG MY6410(mDirac-III) board.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -36,16 +36,18 @@
  * High Level Configuration Options
  * (easy to change)
  */
-#define CONFIG_S3C6400		1	/* in a SAMSUNG S3C6400 SoC     */
+#define CONFIG_S3C6410		1	/* in a SAMSUNG S3C6410 SoC     */
 #define CONFIG_S3C64XX		1	/* in a SAMSUNG S3C64XX Family  */
-#define CONFIG_SMDK6400		1	/* on a SAMSUNG SMDK6400 Board  */
+#define CONFIG_MY6410		1	/* on a MY6410 (OK6410) Board  */
+
+#define CONFIG_ASM_DEBUG  
 
 #define CONFIG_SYS_SDRAM_BASE	0x50000000
 
-/* input clock of PLL: SMDK6400 has 12MHz input clock */
+/* input clock of PLL: MY6410 has 12MHz input clock */
 #define CONFIG_SYS_CLK_FREQ	12000000
 
-#if !defined(CONFIG_NAND_SPL) && (TEXT_BASE >= 0xc0000000)
+#if (TEXT_BASE >= 0xc0000000)
 #define CONFIG_ENABLE_MMU
 #endif
 
@@ -82,14 +84,16 @@
 /*
  * select serial console configuration
  */
-#define CONFIG_SERIAL1          1	/* we use SERIAL 1 on SMDK6400	*/
+#define CONFIG_SERIAL1          1	/* we use SERIAL 1 on MY6410	*/
+#define CONFIG_UARTCLK_DOUTMPLL
 
 #define CONFIG_SYS_HUSH_PARSER			/* use "hush" command parser	*/
 #ifdef CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #endif
 
-#define CONFIG_CMDLINE_EDITING
+#define CONFIG_CMDLINE_EDITING     /* 使命令行支持通过上下键翻阅命令历史 */
+#define CONFIG_AUTO_COMPLETE       /* 使命令行支持自动补齐 */
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
@@ -128,14 +132,14 @@
  * Miscellaneous configurable options
  */
 #define CONFIG_SYS_LONGHELP				/* undef to save memory	      */
-#define CONFIG_SYS_PROMPT		"SMDK6400 # "	/* Monitor Command Prompt     */
+#define CONFIG_SYS_PROMPT		"MY6410 # "	/* Monitor Command Prompt     */
 #define CONFIG_SYS_CBSIZE		256		/* Console I/O Buffer Size    */
 #define CONFIG_SYS_PBSIZE		384		/* Print Buffer Size          */
 #define CONFIG_SYS_MAXARGS		16		/* max number of command args */
 #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE	/* Boot Argument Buffer Size  */
 
 #define CONFIG_SYS_MEMTEST_START	CONFIG_SYS_SDRAM_BASE	/* memtest works on	      */
-#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_SDRAM_BASE + 0x7e00000) /* 126MB in DRAM */
+#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_SDRAM_BASE + 0xfc00000) /* 252MB in DRAM */
 
 #define CONFIG_SYS_LOAD_ADDR		CONFIG_SYS_SDRAM_BASE	/* default load address	*/
 
@@ -149,32 +153,23 @@
  *
  * The stack sizes are set up in start.S using the settings below
  */
-#define CONFIG_STACKSIZE	0x40000		/* regular stack 256KB */
+#define CONFIG_STACKSIZE	0x80000		/* regular stack 512KB */
 
-/**********************************
- Support Clock Settings
- **********************************
- Setting	SYNC	ASYNC
- ----------------------------------
- 667_133_66	 X	  O
- 533_133_66	 O	  O
- 400_133_66	 X	  O
- 400_100_50	 O	  O
- **********************************/
-
-/*#define CONFIG_CLK_667_133_66*/
+//#define CONFIG_CLK_800_133_66
+//#define CONFIG_CLK_667_133_66
 #define CONFIG_CLK_533_133_66
-/*
-#define CONFIG_CLK_400_100_50
-#define CONFIG_CLK_400_133_66
-#define CONFIG_SYNC_MODE
-*/
+//#define CONFIG_CLK_400_133_66
+//#define CONFIG_CLK_400_100_50
 
-/* SMDK6400 has 2 banks of DRAM, but we use only one in U-Boot */
+/* MY6410 has 2 banks of DRAM, but we use only one in U-Boot */
 #define CONFIG_NR_DRAM_BANKS	1
 #define PHYS_SDRAM_1		CONFIG_SYS_SDRAM_BASE	/* SDRAM Bank #1	*/
-#define PHYS_SDRAM_1_SIZE	0x08000000	/* 128 MB in Bank #1	*/
+#define PHYS_SDRAM_1_SIZE	0x10000000	/* 256 MB in Bank #1	*/
 
+/* Do Not Use Nor Flash */
+#define CONFIG_SYS_NO_FLASH
+
+#ifndef CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_FLASH_BASE		0x10000000
 #define CONFIG_SYS_MONITOR_BASE	0x00000000
 
@@ -199,16 +194,18 @@
 
 #define CONFIG_ENV_SIZE		0x4000	/* Total Size of Environment Sector */
 
+#endif /* CONFIG_SYS_NO_FLASH */
+
 /*
- * SMDK6400 board specific data
+ * MY6410 board specific data
  */
 
-#define CONFIG_IDENT_STRING	" for SMDK6400"
+#define CONFIG_IDENT_STRING	" for MY6410"
 
 /* base address for uboot */
-#define CONFIG_SYS_PHY_UBOOT_BASE	(CONFIG_SYS_SDRAM_BASE + 0x07e00000)
+#define CONFIG_SYS_PHY_UBOOT_BASE	(CONFIG_SYS_SDRAM_BASE + 0x0fc00000)
 /* total memory available to uboot */
-#define CONFIG_SYS_UBOOT_SIZE		(1024 * 1024)
+#define CONFIG_SYS_UBOOT_SIZE		(4 * 1024 * 1024)
 
 /* Put environment copies after the end of U-Boot owned RAM */
 #define CONFIG_NAND_ENV_DST	(CONFIG_SYS_UBOOT_BASE + CONFIG_SYS_UBOOT_SIZE)
@@ -224,9 +221,10 @@
 #endif
 
 /* NAND U-Boot load and start address */
-#define CONFIG_SYS_UBOOT_BASE		(CONFIG_SYS_MAPPED_RAM_BASE + 0x07e00000)
+#define CONFIG_SYS_UBOOT_BASE		(CONFIG_SYS_MAPPED_RAM_BASE + 0x0fc00000)
 
-#define CONFIG_ENV_OFFSET		0x0040000
+#define CONFIG_ENV_OFFSET		0x80000   /* Offset of Environment in Nand */
+#define CONFIG_ENV_SIZE         0x80000   /* Total Size of Environment in Nand */ 
 
 /* NAND configuration */
 #define CONFIG_SYS_MAX_NAND_DEVICE	1

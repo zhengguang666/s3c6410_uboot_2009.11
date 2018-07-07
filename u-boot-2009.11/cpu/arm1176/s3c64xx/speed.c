@@ -132,7 +132,14 @@ ulong get_UCLK(void)
 
 int print_cpuinfo(void)
 {
+#if defined(CONFIG_S3C6400)
 	printf("\nCPU:     S3C6400@%luMHz\n", get_ARMCLK() / 1000000);
+#elif defined(CONFIG_S3C6410)
+	printf("\nCPU:     S3C6410@%luMHz\n", get_ARMCLK() / 1000000);
+#else
+#error "Only 6400 and 6410 Soc are supported."
+#endif
+
 	printf("         Fclk = %luMHz, Hclk = %luMHz, Pclk = %luMHz ",
 	       get_FCLK() / 1000000, get_HCLK() / 1000000,
 	       get_PCLK() / 1000000);

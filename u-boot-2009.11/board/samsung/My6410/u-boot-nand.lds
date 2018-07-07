@@ -36,6 +36,10 @@ SECTIONS
 	{
 	  cpu/arm1176/start.o	(.text)
 	  cpu/arm1176/s3c64xx/cpu_init.o	(.text)
+      board/samsung/My6410/lowlevel_init.o (.text)
+      board/samsung/My6410/nand_cp.o (.text)
+      board/samsung/My6410/movi.o (.text)
+      lib_arm/debug.o (.text)
 	  *(.text)
 	}
 

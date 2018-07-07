@@ -97,7 +97,11 @@ int serial_init(void)
 	/* 8N1 */
 	uart->ULCON = 3;
 	/* No interrupts, no DMA, pure polling */
-	uart->UCON = 5;
+#if defined(CONFIG_UARTCLK_DOUTMPLL)
+	uart->UCON = 0xc05;
+#else
+	uart->UCON = 0x805;
+#endif
 
 	serial_setbrg();
 

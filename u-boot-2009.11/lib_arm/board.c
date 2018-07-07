@@ -274,7 +274,16 @@ void start_armboot (void)
 #endif
 
 	/* Pointer is writable since we allocated a register for it */
+#ifdef CONFIG_MEMORY_UPPER_CODE 
+	ulong gd_base;
+	gd_base = CONFIG_SYS_UBOOT_BASE + CONFIG_SYS_UBOOT_SIZE - 
+              CONFIG_SYS_MALLOC_LEN - CONFIG_STACKSIZE - sizeof(gd_t);
+
+	gd = (gd_t*)gd_base;
+#else
 	gd = (gd_t*)(_armboot_start - CONFIG_SYS_MALLOC_LEN - sizeof(gd_t));
+#endif
+
 	/* compiler optimization barrier needed for GCC >= 3.4 */
 	__asm__ __volatile__("": : :"memory");
 
@@ -293,8 +302,14 @@ void start_armboot (void)
 	}
 
 	/* armboot_start is defined in the board-specific linker script */
+#ifdef CONFIG_MEMORY_UPPER_CODE 
+	mem_malloc_init (CONFIG_SYS_UBOOT_BASE + CONFIG_SYS_UBOOT_SIZE - 
+                     CONFIG_SYS_MALLOC_LEN - CONFIG_STACKSIZE, 
+                     CONFIG_SYS_MALLOC_LEN);
+#else
 	mem_malloc_init (_armboot_start - CONFIG_SYS_MALLOC_LEN,
 			CONFIG_SYS_MALLOC_LEN);
+#endif
 
 #ifndef CONFIG_SYS_NO_FLASH
 	/* configure available FLASH banks */

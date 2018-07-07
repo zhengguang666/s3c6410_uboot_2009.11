@@ -35,7 +35,16 @@
 #ifdef CONFIG_ENABLE_MMU
 #include <asm/proc/domain.h>
 #endif
+
+#if defined(CONFIG_S3C6400)
 #include <s3c6400.h>
+
+#elif defined(CONFIG_S3C6410)
+#include <s3c6410.h>
+
+#else
+#error "Only 6400 and 6410 Soc are supported."
+#endif
 
 #if !defined(CONFIG_ENABLE_MMU) && !defined(CONFIG_SYS_PHY_UBOOT_BASE)
 #define CONFIG_SYS_PHY_UBOOT_BASE	CONFIG_SYS_UBOOT_BASE
@@ -131,7 +140,7 @@ reset:
 	 * set the cpu to SVC32 mode
 	 */
 	mrs	r0, cpsr
-	bic	r0, r0, #0x3f
+	bic	r0, r0, #0x1f
 	orr	r0, r0, #0xd3
 	msr	cpsr, r0
 
@@ -170,6 +179,11 @@ cpu_init_crit:
 	bic	r0, r0, #0x00000087	@ clear bits 7, 2:0 (B--- -CAM)
 	orr	r0, r0, #0x00000002	@ set bit 2 (A) Align
 	orr	r0, r0, #0x00001000	@ set bit 12 (I) I-Cache
+
+#if defined(CONFIG_S3C6410)
+    mcr	p15, 0, r0, c1, c0, 0
+
+#elif defined(CONFIG_S3C6400)
 	/* Prepare to disable the MMU */
 	adr	r1, mmu_disable_phys
 	/* We presume we're within the first 1024 bytes */
@@ -187,7 +201,12 @@ mmu_disable:
 	nop
 	nop
 	mov	pc, r2
+
+#else
+#error "Only 6400 and 6410 Soc are supported."
 #endif
+
+#endif  /* CONFIG_NAND_SPL */
 
 mmu_disable_phys:
 	/* Peri port setup */
@@ -200,7 +219,32 @@ mmu_disable_phys:
 	 */
 	bl	lowlevel_init		/* go setup pll,mux,memory */
 
+#if !defined(CONFIG_SKIP_RELOCATE_UBOOT) && !defined(CONFIG_NAND_SPL)
+relocate:				/* relocate U-Boot to RAM	    */
+	adr	r0, _start		/* r0 <- current position of code   */
+	ldr	r1, _TEXT_BASE		/* test if we run from flash or RAM */
+	cmp	r0, r1			/* don't reloc during debug         */
+	beq	after_copy
+
+    mov r2, #0 
+    str r2, [r2]
+    ldr r2, [r2]
+    cmp r2, #0
+
+    ldr sp, _TEXT_PHY_BASE    /* setup temp stack pointer */ 
+
+    bne copy_to_ram_from_mmc 
+
+    bl  copy_to_ram_from_nand
+    b   after_copy
+
+copy_to_ram_from_mmc:
+	bl	movi_bl2_copy 
+
+#endif  /* !defined(CONFIG_SKIP_RELOCATE_UBOOT) && !defined(CONFIG_NAND_SPL) */
+
 after_copy:
+
 #ifdef CONFIG_ENABLE_MMU
 enable_mmu:
 	/* enable domain access */
