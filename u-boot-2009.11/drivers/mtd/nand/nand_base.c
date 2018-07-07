@@ -2566,7 +2566,7 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 	if (!mtd->name)
 		mtd->name = type->name;
 
-	chip->chipsize = type->chipsize << 20;
+	chip->chipsize = ((uint64_t)type->chipsize) << 20;
 
 	/* Newer devices have all the information in additional id bytes */
 	if (!type->pagesize) {
@@ -2575,18 +2575,29 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 		chip->cellinfo = chip->read_byte(mtd);
 		/* The 4th id byte is the important one */
 		extid = chip->read_byte(mtd);
-		/* Calc pagesize */
-		mtd->writesize = 1024 << (extid & 0x3);
-		extid >>= 2;
-		/* Calc oobsize */
-		mtd->oobsize = (8 << (extid & 0x01)) * (mtd->writesize >> 9);
-		extid >>= 2;
-		/* Calc blocksize. Blocksize is multiples of 64KiB */
-		mtd->erasesize = (64 * 1024) << (extid & 0x03);
-		extid >>= 2;
+        
+        if (dev_id == 0xd5 || dev_id == 0xd7) {
+            /* Calc pagesize */
+            mtd->writesize = 2048 << (extid & 0x3);
+            extid >>= 2;
+            /* Calc oobsize */
+            mtd->oobsize = (extid & 0x01) ? 128 : 218;
+            extid >>= 2;
+            /* Calc blocksize. Blocksize is multiples of 128KiB */
+            mtd->erasesize = (128 * 1024) << (extid & 0x03);
+        } else {
+            /* Calc pagesize */
+            mtd->writesize = 1024 << (extid & 0x3);
+            extid >>= 2;
+            /* Calc oobsize */
+            mtd->oobsize = (8 << (extid & 0x01)) * (mtd->writesize >> 9);
+            extid >>= 2;
+            /* Calc blocksize. Blocksize is multiples of 64KiB */
+            mtd->erasesize = (64 * 1024) << (extid & 0x03);
+        }
+        extid >>= 2;
 		/* Get buswidth information */
 		busw = (extid & 0x01) ? NAND_BUSWIDTH_16 : 0;
-
 	} else {
 		/*
 		 * Old devices have chip data hardcoded in the device id table

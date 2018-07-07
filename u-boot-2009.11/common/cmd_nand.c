@@ -296,9 +296,10 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 
 	if (strcmp(cmd, "bad") == 0) {
 		printf("\nDevice %d bad blocks:\n", nand_curr_device);
-		for (off = 0; off < nand->size; off += nand->erasesize)
-			if (nand_block_isbad(nand, off))
-				printf("  %08lx\n", off);
+        uint64_t loff;
+		for (loff = 0; loff < nand->size; loff += nand->erasesize)
+			if (nand_block_isbad(nand, loff))
+				printf("  %08llx\n", loff);
 		return 0;
 	}
 

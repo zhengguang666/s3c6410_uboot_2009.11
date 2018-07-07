@@ -226,6 +226,9 @@ relocate:				/* relocate U-Boot to RAM	    */
 	cmp	r0, r1			/* don't reloc during debug         */
 	beq	after_copy
 
+    cmp r0, #CONFIG_SYS_SDRAM_BASE
+    bge copy_to_ram_from_ram
+
     mov r2, #0 
     str r2, [r2]
     ldr r2, [r2]
@@ -237,6 +240,19 @@ relocate:				/* relocate U-Boot to RAM	    */
 
     bl  copy_to_ram_from_nand
     b   after_copy
+
+copy_to_ram_from_ram:
+	ldr	r2, _armboot_start
+	ldr	r3, _bss_start
+	sub	r2, r3, r2		/* r2 <- size of armboot            */
+	add	r2, r0, r2		/* r2 <- source end address         */
+
+copy_loop:
+	ldmia	r0!, {r3-r10}		/* copy from source address [r0]    */
+	stmia	r1!, {r3-r10}		/* copy to   target address [r1]    */
+	cmp	r0, r2			        /* until source end addreee [r2]    */
+	ble	copy_loop
+    bl after_copy
 
 copy_to_ram_from_mmc:
 	bl	movi_bl2_copy 

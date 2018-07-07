@@ -223,9 +223,6 @@
 /* total memory available to uboot */
 #define CONFIG_SYS_UBOOT_SIZE		(4 * 1024 * 1024)
 
-/* Put environment copies after the end of U-Boot owned RAM */
-#define CONFIG_NAND_ENV_DST	(CONFIG_SYS_UBOOT_BASE + CONFIG_SYS_UBOOT_SIZE)
-
 #ifdef CONFIG_ENABLE_MMU
 #define CONFIG_SYS_MAPPED_RAM_BASE	0xc0000000
 #else
@@ -248,48 +245,12 @@
 #define CONFIG_SYS_NAND_YAFFS_WRITE	1  /* support yaffs write		      */
 #define CONFIG_SYS_NAND_BBT_2NDPAGE	1  /* bad-block markers in 1st and 2nd pages  */
 
-#define CONFIG_SYS_NAND_U_BOOT_DST	CONFIG_SYS_PHY_UBOOT_BASE	/* NUB load-addr      */
-#define CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_NAND_U_BOOT_DST	/* NUB start-addr     */
-
-#define CONFIG_SYS_NAND_U_BOOT_OFFS	(4 * 1024)	/* Offset to RAM U-Boot image */
-#define CONFIG_SYS_NAND_U_BOOT_SIZE	(252 * 1024)	/* Size of RAM U-Boot image   */
-
-/* NAND chip page size		*/
-#define CONFIG_SYS_NAND_PAGE_SIZE	2048
-/* NAND chip block size		*/
-#define CONFIG_SYS_NAND_BLOCK_SIZE	(128 * 1024)
-/* NAND chip page per block count  */
-#define CONFIG_SYS_NAND_PAGE_COUNT	64
 /* Location of the bad-block label */
 #define CONFIG_SYS_NAND_BAD_BLOCK_POS	0
 /* Extra address cycle for > 128MiB */
 #define CONFIG_SYS_NAND_5_ADDR_CYCLE
 
-/* Size of the block protected by one OOB (Spare Area in Samsung terminology) */
-#define CONFIG_SYS_NAND_ECCSIZE	CONFIG_SYS_NAND_PAGE_SIZE
-/* Number of ECC bytes per OOB - S3C6400 calculates 4 bytes ECC in 1-bit mode */
-#define CONFIG_SYS_NAND_ECCBYTES	4
-/* Number of ECC-blocks per NAND page */
-#define CONFIG_SYS_NAND_ECCSTEPS	(CONFIG_SYS_NAND_PAGE_SIZE / CONFIG_SYS_NAND_ECCSIZE)
-/* Size of a single OOB region */
-#define CONFIG_SYS_NAND_OOBSIZE	64
-/* Number of ECC bytes per page */
-#define CONFIG_SYS_NAND_ECCTOTAL	(CONFIG_SYS_NAND_ECCBYTES * CONFIG_SYS_NAND_ECCSTEPS)
-/* ECC byte positions */
-#define CONFIG_SYS_NAND_ECCPOS		{40, 41, 42, 43, 44, 45, 46, 47, \
-				 48, 49, 50, 51, 52, 53, 54, 55, \
-				 56, 57, 58, 59, 60, 61, 62, 63}
-
 #define CONFIG_SYS_64BIT_VSPRINTF		/* needed for nand_util.c */
-
-/* Boot configuration (define only one of next 3) */
-#define CONFIG_BOOT_NAND
-/* None of these are currently implemented. Left from the original Samsung
- * version for reference
-#define CONFIG_BOOT_NOR
-#define CONFIG_BOOT_MOVINAND
-#define CONFIG_BOOT_ONENAND
-*/
 
 #define CONFIG_NAND
 #define CONFIG_NAND_S3C64XX
