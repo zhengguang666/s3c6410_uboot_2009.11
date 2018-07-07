@@ -60,7 +60,7 @@
 /*
  * Architecture magic and machine type
  */
-#define MACH_TYPE		1270
+#define MACH_TYPE		1626
 
 #define CONFIG_DISPLAY_CPUINFO
 #define CONFIG_DISPLAY_BOARDINFO
@@ -122,13 +122,20 @@
 #define CONFIG_CMD_FAT
 #define CONFIG_CMD_EXT2
 
-#define CONFIG_BOOTDELAY	3
+#define CONFIG_SETUP_MEMORY_TAGS
+#define CONFIG_INITRD_TAG
+#define CONFIG_CMDLINE_TAG
+
+#define CONFIG_BOOTDELAY	1
+#define CONFIG_BOOTFILE	    "uImage"
+#define CONFIG_BOOTCOMMAND	"tftp; bootm"
+
 
 #define CONFIG_ETHADDR	    08:90:00:A0:90:90
-#define CONFIG_NETMASK      255.255.254.0
-#define CONFIG_IPADDR		172.21.186.200
-#define CONFIG_SERVERIP		172.21.186.10
-#define CONFIG_GATEWAYIP	172.21.187.254
+#define CONFIG_NETMASK      255.255.255.0
+#define CONFIG_IPADDR		192.168.1.230
+#define CONFIG_SERVERIP		192.168.1.5
+#define CONFIG_GATEWAYIP	192.168.1.1
 
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 
@@ -150,7 +157,7 @@
 #define CONFIG_SYS_MEMTEST_START	CONFIG_SYS_SDRAM_BASE	/* memtest works on	      */
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_SDRAM_BASE + 0xfc00000) /* 252MB in DRAM */
 
-#define CONFIG_SYS_LOAD_ADDR		CONFIG_SYS_SDRAM_BASE	/* default load address	*/
+#define CONFIG_SYS_LOAD_ADDR		(CONFIG_SYS_SDRAM_BASE + 0x8000)	/* default load address	*/
 
 #define CONFIG_SYS_HZ			1000
 
@@ -221,12 +228,8 @@
 
 #ifdef CONFIG_ENABLE_MMU
 #define CONFIG_SYS_MAPPED_RAM_BASE	0xc0000000
-#define CONFIG_BOOTCOMMAND	"nand read 0xc0018000 0x60000 0x1c0000;" \
-				"bootm 0xc0018000"
 #else
 #define CONFIG_SYS_MAPPED_RAM_BASE	CONFIG_SYS_SDRAM_BASE
-#define CONFIG_BOOTCOMMAND	"nand read 0x50018000 0x60000 0x1c0000;" \
-				"bootm 0x50018000"
 #endif
 
 /* NAND U-Boot load and start address */
@@ -297,7 +300,8 @@
 
 /* Settings as above boot configuration */
 #define CONFIG_ENV_IS_IN_NAND
-#define CONFIG_BOOTARGS		"console=ttySAC,115200"
+#define CONFIG_BOOTARGS	\
+"root=/dev/nfs nfsroot=192.168.1.5:/nfs/rootfs ip=192.168.1.230 console=ttySAC0,115200"
 
 #if !defined(CONFIG_ENABLE_MMU)
 #define CONFIG_CMD_USB			1

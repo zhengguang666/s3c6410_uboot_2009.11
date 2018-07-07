@@ -131,6 +131,22 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 	return 1;
 }
 
+unsigned long do_go_exec (ulong (*entry)(int, char *[]), int argc, char *argv[])
+{
+    ulong magic;
+    bootm_headers_t images;
+    
+    magic = *(ulong*)((ulong)entry + 4*9);
+
+    /* zImage镜像的第36个字节处有一个magic number，
+     * 通过它我们可以判断是否是一个zImage镜像
+     */
+    if (0x016f2818 != magic)
+        return entry (argc, argv);
+
+    images.ep = (ulong)entry;
+    return do_bootm_linux(0, argc, argv, &images);
+}
 
 #if defined (CONFIG_SETUP_MEMORY_TAGS) || \
     defined (CONFIG_CMDLINE_TAG) || \
