@@ -390,7 +390,42 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 			else
 				ret = nand_write_skip_bad(nand, off, &size,
 							  (u_char *)addr);
-		} else if (!strcmp(s, ".oob")) {
+#if defined(CONFIG_CMD_YAFFS)
+        } else if (!strncmp(s, ".yaffs", 6)) {
+            if (read) {
+                printf("nand read.yaffs is not support yet!\n");
+            } else {
+                nand->rw_oob = 1;
+#if defined(CONFIG_YAFFS_SKIPFB)
+                nand->skip_fb = 1;
+#else 
+                nand->skip_fb = 0;
+#endif
+                ret = nand_write_skip_bad(nand, off, &size,
+                        (u_char *)addr);
+#if defined(CONFIG_YAFFS_SKIPFB)
+                nand->skip_fb = 0;
+#endif
+                nand->rw_oob = 0;
+            }
+#endif
+        } else if (!strcmp(s, ".uboot")) {
+            if (read) {
+                printf("nand read.uboot is not support yet!\n");
+            } else {
+                size_t page_size = nand->writesize;
+                if (page_size > 2048) {
+                    int i = 0;
+                    for (i = 0; i < 4; i++) {
+                        nand_write(nand, off, &page_size, (u_char *)addr);
+                        addr += 2048;
+                        off  += page_size;
+                    }
+                    size -= 4 * page_size;
+                }
+                ret = nand_write_skip_bad(nand, off, &size, (u_char *)addr);
+            }
+        } else if (!strcmp(s, ".oob")) {
 			/* out-of-band data */
 			mtd_oob_ops_t ops = {
 				.oobbuf = (u8 *)addr,

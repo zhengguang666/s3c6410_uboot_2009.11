@@ -2008,6 +2008,25 @@ static int nand_write(struct mtd_info *mtd, loff_t to, size_t len,
 {
 	struct nand_chip *chip = mtd->priv;
 	int ret;
+    int opsmode = 0;
+
+    if (mtd->rw_oob == 1) {
+        size_t oobsiz = mtd->oobsize;
+        size_t datsiz = mtd->writesize;
+        size_t ooblen = chip->ecc.layout->oobfree->length; 
+        int i = 0;
+        int pages = len / datsiz;
+        uint8_t oob[ooblen*pages];  /* 用于暂存OOB数据的缓冲 */ 
+
+        for (i = 0; i < pages; i++) {
+            /* 将页OOB区文件系统相关数据暂存 */
+            memcpy(oob+i*ooblen, buf+(datsiz+oobsiz)*i + datsiz, ooblen);
+            /* 将页主数据区数据移到buf前半部*/
+            memcpy(buf+i*datsiz, buf+(datsiz+oobsiz)*i, datsiz); 
+        }
+        /* 将页OOB区文件系统相关数据移到buf后半部 */
+        memcpy(buf+pages*datsiz, oob, ooblen*pages);
+    }
 
 	/* Do not allow reads past end of device */
 	if ((to + len) > mtd->size)
@@ -2019,13 +2038,22 @@ static int nand_write(struct mtd_info *mtd, loff_t to, size_t len,
 
 	chip->ops.len = len;
 	chip->ops.datbuf = (uint8_t *)buf;
-	chip->ops.oobbuf = NULL;
+
+    if (mtd->rw_oob == 1) {
+        chip->ops.oobbuf = (uint8_t*)(buf + len);
+        chip->ops.ooblen = mtd->oobsize;
+        opsmode = chip->ops.mode;
+        chip->ops.mode = MTD_OOB_AUTO;
+    } else {
+        chip->ops.oobbuf = NULL;
+    }
 
 	ret = nand_do_write_ops(mtd, to, &chip->ops);
 
 	*retlen = chip->ops.retlen;
 
 	nand_release_device(mtd);
+    chip->ops.mode = opsmode;
 
 	return ret;
 }

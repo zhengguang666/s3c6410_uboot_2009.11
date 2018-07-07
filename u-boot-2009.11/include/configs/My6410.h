@@ -121,6 +121,7 @@
 #define CONFIG_CMD_ELF
 #define CONFIG_CMD_FAT
 #define CONFIG_CMD_EXT2
+#define CONFIG_CMD_YAFFS
 
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
@@ -239,16 +240,8 @@
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 #define CONFIG_SYS_NAND_BASE		0x70200010
 #define CONFIG_SYS_S3C_NAND_HWECC
+#define CONFIG_YAFFS_SKIPFB
 
-#define CONFIG_SYS_NAND_SKIP_BAD_DOT_I	1  /* ".i" read skips bad blocks	      */
-#define CONFIG_SYS_NAND_WP		1
-#define CONFIG_SYS_NAND_YAFFS_WRITE	1  /* support yaffs write		      */
-#define CONFIG_SYS_NAND_BBT_2NDPAGE	1  /* bad-block markers in 1st and 2nd pages  */
-
-/* Location of the bad-block label */
-#define CONFIG_SYS_NAND_BAD_BLOCK_POS	0
-/* Extra address cycle for > 128MiB */
-#define CONFIG_SYS_NAND_5_ADDR_CYCLE
 
 #define CONFIG_SYS_64BIT_VSPRINTF		/* needed for nand_util.c */
 
