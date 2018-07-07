@@ -33,13 +33,13 @@
 #include <s3c6400.h>
 
 /* ------------------------------------------------------------------------- */
-#define CS8900_Tacs	0x0	/* 0clk		address set-up		*/
-#define CS8900_Tcos	0x4	/* 4clk		chip selection set-up	*/
-#define CS8900_Tacc	0xE	/* 14clk	access cycle		*/
-#define CS8900_Tcoh	0x1	/* 1clk		chip selection hold	*/
-#define CS8900_Tah	0x4	/* 4clk		address holding time	*/
-#define CS8900_Tacp	0x6	/* 6clk		page mode access cycle	*/
-#define CS8900_PMC	0x0	/* normal(1data)page mode configuration	*/
+#define DM9000_Tacs	0x1	/* 1clk		address set-up		*/
+#define DM9000_Tcos	0x2	/* 2clk		chip selection set-up	*/
+#define DM9000_Tacc  0x4	/* 5clk	    access cycle		*/
+#define DM9000_Tcoh  0x1	/* 1clk		chip selection hold	*/
+#define DM9000_Tah	    0x2	/* 2clk		address holding time	*/
+#define DM9000_Tacp	0x2	/* 2clk		page mode access cycle	*/
+#define DM9000_PMC	    0x0	/* normal(1data)page mode configuration	*/
 
 static inline void delay(unsigned long loops)
 {
@@ -52,20 +52,26 @@ static inline void delay(unsigned long loops)
  * Miscellaneous platform dependent initialisations
  */
 
-static void cs8900_pre_init(void)
+static void dm9000_pre_init(void)
 {
+    ulong val;
+    val = GPNCON_REG;
+    val &= ~(3<<14);
+    val |= 2<<14;
+    GPNCON_REG = val;
+
 	SROM_BW_REG &= ~(0xf << 4);
 	SROM_BW_REG |= (1 << 7) | (1 << 6) | (1 << 4);
-	SROM_BC1_REG = ((CS8900_Tacs << 28) + (CS8900_Tcos << 24) +
-			(CS8900_Tacc << 16) + (CS8900_Tcoh << 12) +
-			(CS8900_Tah << 8) + (CS8900_Tacp << 4) + CS8900_PMC);
+	SROM_BC1_REG = ((DM9000_Tacs << 28) + (DM9000_Tcos << 24) +
+			(DM9000_Tacc << 16) + (DM9000_Tcoh << 12) +
+			(DM9000_Tah << 8) + (DM9000_Tacp << 4) + DM9000_PMC);
 }
 
 int board_init(void)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 
-	cs8900_pre_init();
+	dm9000_pre_init();
 
 	gd->bd->bi_arch_number = MACH_TYPE;
 	gd->bd->bi_boot_params = PHYS_SDRAM_1 + 0x100;
@@ -120,8 +126,8 @@ ulong board_flash_get_legacy (ulong base, int banknum, flash_info_t *info)
 int board_eth_init(bd_t *bis)
 {
 	int rc = 0;
-#ifdef CONFIG_CS8900
-	rc = cs8900_initialize(0, CONFIG_CS8900_BASE);
+#ifdef CONFIG_DRIVER_DM9000
+	rc = dm9000_initialize(bis);
 #endif
 	return rc;
 }

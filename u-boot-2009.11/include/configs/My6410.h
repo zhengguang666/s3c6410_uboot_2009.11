@@ -77,9 +77,12 @@
  * Hardware drivers
  */
 #define CONFIG_NET_MULTI
-#define CONFIG_CS8900			/* we have a CS8900 on-board	*/
-#define CONFIG_CS8900_BASE	  	0x18800300
-#define CONFIG_CS8900_BUS16		/* follow the Linux driver	*/
+#define CONFIG_DRIVER_DM9000	1	
+#define CONFIG_DM9000_BASE	  	0x18000000
+#define DM9000_IO               CONFIG_DM9000_BASE
+#define DM9000_DATA	            (CONFIG_DM9000_BASE + 4)
+#define CONFIG_DM9000_USE_16BIT		1
+#define CONFIG_DM9000_NO_SROM		1
 
 /*
  * select serial console configuration
@@ -120,6 +123,12 @@
 #define CONFIG_CMD_EXT2
 
 #define CONFIG_BOOTDELAY	3
+
+#define CONFIG_ETHADDR	    08:90:00:A0:90:90
+#define CONFIG_NETMASK      255.255.254.0
+#define CONFIG_IPADDR		172.21.186.200
+#define CONFIG_SERVERIP		172.21.186.10
+#define CONFIG_GATEWAYIP	172.21.187.254
 
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 
